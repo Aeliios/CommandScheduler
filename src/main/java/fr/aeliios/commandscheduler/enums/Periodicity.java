@@ -1,6 +1,6 @@
 package fr.aeliios.commandscheduler.enums;
 
-public enum TimeScope {
+public enum Periodicity {
     DAILY,
     WEEKLY,
     MONTHLY,

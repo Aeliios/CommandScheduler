@@ -1,6 +1,5 @@
 package fr.aeliios.commandscheduler.data;
 
-import fr.aeliios.commandscheduler.enums.TimeScope;
 import org.jetbrains.annotations.Nullable;
 
 import java.time.LocalDateTime;

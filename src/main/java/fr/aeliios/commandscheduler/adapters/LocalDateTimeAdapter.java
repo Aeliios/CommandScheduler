@@ -15,13 +15,15 @@ import java.time.format.DateTimeFormatter;
 
 public class LocalDateTimeAdapter implements JsonSerializer<LocalDateTime>, JsonDeserializer<LocalDateTime> {
 
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+
     @Override
     public JsonElement serialize(LocalDateTime localDateTime, Type type, JsonSerializationContext context) {
-        return new JsonPrimitive(localDateTime.format(DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss")));
+        return new JsonPrimitive(localDateTime.format(this.formatter));
     }
 
     @Override
     public LocalDateTime deserialize(JsonElement json, Type type, JsonDeserializationContext context) throws JsonParseException {
-        return LocalDateTime.parse(json.getAsString(), DateTimeFormatter.ofPattern("dd-MM-yyyy HH:mm:ss"));
+        return LocalDateTime.parse(json.getAsString(), this.formatter);
     }
 }
