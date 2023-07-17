@@ -1,6 +1,6 @@
 name: CommandScheduler
 version: '${version}'
 main: fr.aeliios.commandscheduler.CommandScheduler
-depend: [ PlaceholderAPI ]
+softdepend: [ PlaceholderAPI ]
 api-version: '1.20'
 author: Aeliios

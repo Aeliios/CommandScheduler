@@ -44,7 +44,7 @@ public final class CommandScheduler extends JavaPlugin {
 
     private final Map<String, LocalDateTime> tasks = new HashMap<>();
 
-    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("dd/MM/yyyy HH:mm:ss");
+    private final DateTimeFormatter formatter = DateTimeFormatter.ofPattern("MM/dd/yyyy HH:mm:ss");
 
     public Map<String, LocalDateTime> getTasks() {
         return this.tasks;
@@ -58,7 +58,7 @@ public final class CommandScheduler extends JavaPlugin {
 
         File commandsExample = new File(this.getDataFolder(), "commands_example.json");
         if (!commandsExample.exists()) {
-            Entry entry1 = new Entry("entry1", LocalTime.of(12, 0),
+            Entry entry1 = new Entry("entry1", LocalTime.of(12, 42),
                     new TimeScope(Periodicity.DAILY, null), List.of("command1", "command2"));
 
             Entry entry2 = new Entry("entry2", LocalTime.of(12, 42),
@@ -67,7 +67,7 @@ public final class CommandScheduler extends JavaPlugin {
             Entry entry3 = new Entry("entry3", LocalTime.of(12, 42, 42),
                     new TimeScope(Periodicity.MONTHLY, Day.FIRST_DAY), List.of("command5", "command6"));
 
-            Entry entry4 = new Entry("entry4", LocalTime.now(),
+            Entry entry4 = new Entry("entry4", LocalTime.of(12, 42, 42, 42),
                     new TimeScope(Periodicity.YEARLY, Day.LAST_DAY), List.of("command7", "command8"));
 
             this.save(new Entry[]{entry1, entry2, entry3, entry4}, commandsExample);
@@ -86,12 +86,6 @@ public final class CommandScheduler extends JavaPlugin {
         }
 
         for (Entry entry : entries) {
-
-            LocalDateTime nextExecution = this.getNextExecution(entry.getTimeScope().periodicity(), this.getLastExecution(entry));
-            if (nextExecution.toLocalDate().isAfter(this.getNowZoned().toLocalDate())) {
-                continue;
-            }
-
             LocalDateTime toExecute = LocalDateTime.of(LocalDate.now(), entry.getTime());
 
             //Daily Periodicity has no Day
@@ -111,6 +105,12 @@ public final class CommandScheduler extends JavaPlugin {
 
             ZonedDateTime toExecuteZoned = toExecute.atZone(ZoneId.systemDefault());
 
+            LocalDateTime nextExecution = this.getNextExecution(entry.getTimeScope().periodicity(), this.getLastExecution(entry));
+            if (nextExecution.toLocalDate().isAfter(this.getNowZoned().toLocalDate())) {
+                this.tasks.put(entry.getName(), toExecuteZoned.toLocalDateTime());
+                continue;
+            }
+
             if (this.getNowZoned().isAfter(toExecuteZoned)) {
                 this.execute(entry, toExecuteZoned.toLocalDate());
                 this.getServer().getLogger().log(Level.INFO, () -> "Executed lately " + entry.getName() + " at " + this.getNowZoned().format(this.formatter));
@@ -126,6 +126,7 @@ public final class CommandScheduler extends JavaPlugin {
 
                 this.getServer().getLogger().log(Level.INFO, () -> "Scheduled " + entry.getName() + " at " + toExecuteZoned.format(this.formatter));
             }
+
             this.tasks.put(entry.getName(), toExecuteZoned.toLocalDateTime());
         }
     }
@@ -247,10 +248,10 @@ public final class CommandScheduler extends JavaPlugin {
             command = command.replaceFirst("/", "");
         }
         String[] split = command.split("%");
-        if (split.length == 1) {
-            return command;
-        } else {
+        if (split.length != 1 && Bukkit.getPluginManager().getPlugin("PlaceholderAPI") != null) {
             return PlaceholderAPI.setPlaceholders(null, command);
+        } else {
+            return command;
         }
     }
 }
