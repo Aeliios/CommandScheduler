@@ -43,8 +43,6 @@ public class CommandSchedulerExpansion extends PlaceholderExpansion {
             return "";
         }
 
-        System.out.println(localDateTime);
-
         Duration duration = Duration.between(LocalDateTime.now(), localDateTime);
 
         return DurationFormatUtils.formatDuration(duration.toMillis(), args[1]);
