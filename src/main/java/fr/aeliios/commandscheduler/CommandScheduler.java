@@ -52,7 +52,9 @@ public final class CommandScheduler extends JavaPlugin {
 
     @Override
     public void onEnable() {
-        new CommandSchedulerExpansion(this).register();
+        if (Bukkit.getPluginManager().isPluginEnabled("PlaceholderAPI")) {
+            new CommandSchedulerExpansion(this).register();
+        }
 
         this.createPluginDirectory();
 
@@ -107,7 +109,7 @@ public final class CommandScheduler extends JavaPlugin {
 
             LocalDateTime nextExecution = this.getNextExecution(entry.getTimeScope().periodicity(), this.getLastExecution(entry));
             if (nextExecution.toLocalDate().isAfter(this.getNowZoned().toLocalDate())) {
-                this.tasks.put(entry.getName(), toExecuteZoned.toLocalDateTime());
+                this.tasks.put(entry.getName(), this.getNextExecution(entry.getTimeScope().periodicity(), this.getNowZoned().toLocalDateTime()));
                 continue;
             }
 
@@ -118,16 +120,15 @@ public final class CommandScheduler extends JavaPlugin {
             }
 
             if (toExecuteZoned.getDayOfYear() == this.getNowZoned().getDayOfYear()) {
+                this.tasks.put(entry.getName(), toExecuteZoned.toLocalDateTime());
+
                 this.getServer().getScheduler().runTaskLaterAsynchronously(this, () -> {
                     this.execute(entry, toExecuteZoned.toLocalDate());
                     this.getServer().getLogger().log(Level.INFO, () -> "Executed " + entry.getName() + " at " + this.getNowZoned().format(this.formatter));
-
                 }, (toExecuteZoned.toLocalTime().toSecondOfDay() - this.getNowZoned().toLocalTime().toSecondOfDay()) * 20L);
 
                 this.getServer().getLogger().log(Level.INFO, () -> "Scheduled " + entry.getName() + " at " + toExecuteZoned.format(this.formatter));
             }
-
-            this.tasks.put(entry.getName(), toExecuteZoned.toLocalDateTime());
         }
     }
 

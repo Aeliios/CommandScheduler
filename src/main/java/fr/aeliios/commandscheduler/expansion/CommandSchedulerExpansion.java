@@ -4,8 +4,6 @@ import fr.aeliios.commandscheduler.CommandScheduler;
 import me.clip.placeholderapi.expansion.PlaceholderExpansion;
 import org.apache.commons.lang3.time.DurationFormatUtils;
 import org.bukkit.OfflinePlayer;
-import org.jetbrains.annotations.NotNull;
-import org.jetbrains.annotations.Nullable;
 
 import java.time.Duration;
 import java.time.LocalDateTime;
@@ -19,22 +17,22 @@ public class CommandSchedulerExpansion extends PlaceholderExpansion {
     }
 
     @Override
-    public @NotNull String getIdentifier() {
+    public String getIdentifier() {
         return "cs";
     }
 
     @Override
-    public @NotNull String getAuthor() {
+    public String getAuthor() {
         return "Aeliios";
     }
 
     @Override
-    public @NotNull String getVersion() {
+    public String getVersion() {
         return "1.0.0";
     }
 
     @Override
-    public @Nullable String onRequest(OfflinePlayer player, @NotNull String params) {
+    public String onRequest(OfflinePlayer player, String params) {
         String[] args = params.split("_");
         if (args.length != 2) {
             return "";
@@ -44,6 +42,8 @@ public class CommandSchedulerExpansion extends PlaceholderExpansion {
         if (localDateTime == null) {
             return "";
         }
+
+        System.out.println(localDateTime);
 
         Duration duration = Duration.between(LocalDateTime.now(), localDateTime);
 

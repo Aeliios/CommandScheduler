@@ -1,7 +1,6 @@
 package fr.aeliios.commandscheduler.data;
 
-import org.jetbrains.annotations.Nullable;
-
+import javax.annotation.Nullable;
 import java.time.LocalDateTime;
 import java.time.LocalTime;
 import java.util.List;
