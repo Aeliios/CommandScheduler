@@ -106,10 +106,10 @@ public final class CommandScheduler extends JavaPlugin {
             }
 
             ZonedDateTime toExecuteZoned = toExecute.atZone(ZoneId.systemDefault());
+            LocalDateTime nextExecution = this.getNextExecution(entry.getTimeScope().periodicity(), this.getLastExecution(entry, toExecuteZoned.toLocalDate()));
 
-            LocalDateTime nextExecution = this.getNextExecution(entry.getTimeScope().periodicity(), this.getLastExecution(entry));
             if (nextExecution.toLocalDate().isAfter(this.getNowZoned().toLocalDate())) {
-                this.tasks.put(entry.getName(), this.getNextExecution(entry.getTimeScope().periodicity(), this.getNowZoned().toLocalDateTime()));
+                this.tasks.put(entry.getName(), nextExecution);
                 continue;
             }
 
@@ -184,7 +184,7 @@ public final class CommandScheduler extends JavaPlugin {
         };
     }
 
-    public LocalDateTime getLastExecution(Entry entry) {
+    public LocalDateTime getLastExecution(Entry entry, LocalDate localDate) {
         LocalDateTime lastExecution = entry.getLastExecution();
 
         if (lastExecution != null) {
@@ -198,7 +198,7 @@ public final class CommandScheduler extends JavaPlugin {
             case YEARLY -> ChronoUnit.YEARS;
         };
 
-        return LocalDateTime.of(LocalDate.now(), entry.getTime()).minus(1, chronoUnit);
+        return LocalDateTime.of(localDate, entry.getTime()).minus(1, chronoUnit);
     }
 
     public Entry[] load(File file) {
